@@ -1,0 +1,18 @@
+PROGRAM test;
+var zahl : int;
+var str : string;
+BEGIN
+  str := "Hallo";
+  zahl := 123;
+  zahl := 1.3321;
+  
+  IF (zahl == 2) THEN zahl := 3;
+  IF (str == "Hallo") THEN 
+    BEGIN str := "h1"; END
+  ELSE
+    str := "h2";   
+  WHILE(zahl > 123) DO 
+  BEGIN 
+    str := "Hallo" + "Welt";
+  END
+END

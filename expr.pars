@@ -1,0 +1,116 @@
+/* Project:  COCKTAIL training
+ * Descr:    LR parser for an expression language
+ * Kind:     Parser specification (solution)
+ * Author:   Dr. Juergen Vollmer <Juergen.Vollmer@informatik-vollmer.de>
+ * $Id: expr-solution.pars,v 1.2 2007/06/01 11:43:20 vollmer Exp $
+ */
+
+SCANNER expr_scan
+
+PARSER  expr_pars
+
+GLOBAL {
+ # include <stdio.h>
+}
+
+PREC LEFT  '+' '-'
+     LEFT  '*' '/'
+     RIGHT '^'
+     LEFT UNARY
+
+RULE
+root = start.
+
+start = <
+  = 'PROGRAM' name ';' var_dec exe.
+>.
+
+name = <
+  = identifier.
+>.
+
+var_dec = < 
+  = 'var' name ':' type ';' .
+  = var_dec var_dec .
+>.
+
+type = < 
+  = 'string'.
+  = 'char'.
+  = 'int'.
+  = 'float'.
+>.
+
+exe = < 
+  = 'BEGIN' body 'END'.
+  = singlebody.
+> .
+
+singlebody = <
+  = allocation.
+  = statmnt.
+>.
+
+body = <
+  = allocation.
+  = statmnt.
+  = body body.
+>.
+
+statmnt = <
+  = ifstatmnt .
+  = whilestatmnt .
+>.
+
+allocation = <
+  = name ':=' expr ';'.
+  = name ':=' expr_str ';'.
+>.
+
+ifstatmnt = <
+  = 'IF' condition 'THEN' exe .
+  = 'IF' condition 'THEN' exe 'ELSE' exe .
+>.
+
+condition = <
+  = '(' expr ')'.
+>.
+
+whilestatmnt = <
+  = 'WHILE' condition 'DO' exe.
+>.
+
+
+expr = <
+	= int_const.
+	= float_const.
+	= identifier.
+	= string_const.
+	= '(' expr ')'.
+	= l:expr '+' r:expr.
+	= l:expr '-' r:expr.
+	= l:expr '*' r:expr.
+	= l:expr '<' r:expr.
+	= l:expr '>' r:expr.
+	= l:expr '==' r:expr.
+	= l:expr '<=' r:expr.
+	= l:expr '>=' r:expr.
+	= l:expr '!=' r:expr.
+	= l:expr '/' r:expr.
+	= l:expr '^' r:expr.
+	= '+' expr   PREC UNARY.
+	= '-' expr   PREC UNARY
+	.
+> . /* expr */
+
+expr_str = <
+  = identifier.
+  = string_const.
+  = expr_str '+' expr_str.
+>.
+
+/* Tokens */
+int_const:    [Value: long]   {Value := 0;  } .
+float_const:  [Value: double] {Value := 0.0;} .
+identifier:   [Value: tIdent] {Value := NoIdent; } .
+string_const: [Value: tIdent] {Value := NoIdent;} .
